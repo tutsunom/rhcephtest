@@ -11,6 +11,9 @@ RHCS2からcephクラスターのデプロイはceph-ansibleを利用するよ�
 
 ![クラスターイメージ](https://github.com/tutsunom/rhcephtest/blob/master/install/image/cluster_container.png)
 
+- 4ノードCephクラスター
+- 3つのノードでは、MON/MGRとOSDがDockerコンテナとして同居
+- 1つのノードでは、RGWとOSDがDockerコンテナとして同居
 ---
 
 ## 事前セットアップ
@@ -73,7 +76,7 @@ SSH password: $HOST_PASSWORD
 ceph-01 | SUCCESS => {
 	"changed": true,
 	"exclusive": false,
-	"key": "ssh-rsa 
+	"key": "ssh-rsa
 ...
 [root@ceph-mgmt ~]# ansible all -m ping    ## 確認
 ```
@@ -248,13 +251,13 @@ f4d59836d3f9        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/
     id:     5765942e-be0e-4a70-8542-871bf4ced6c4
     health: HEALTH_WARN
             too few PGs per OSD (16 < min 30)
- 
+
   services:
     mon: 3 daemons, quorum ceph-01,ceph-02,ceph-03
     mgr: ceph-02(active), standbys: ceph-03, ceph-01
     osd: 12 osds: 12 up, 12 in
     rgw: 1 daemon active
- 
+
   data:
     pools:   6 pools, 48 pgs
     objects: 208 objects, 3359 bytes
@@ -292,7 +295,7 @@ pool ‘mypool’ created
 helloworld
 [root@ceph-01 /]# rados --pool mypool df
 POOL_NAME USED OBJECTS CLONES COPIES MISSING_ON_PRIMARY UNFOUND DEGRADED RD_OPS RD WR_OPS WR     
-mypool      21       1      0      3                  0       0        0      0  0      1 1024 
+mypool      21       1      0      3                  0       0        0      0  0      1 1024
 ...
 ```
 `test.txt`というファイルを`hellowworld`というオブジェクト名で`mypool`にPUTした結果です。  
@@ -316,11 +319,11 @@ helloworld
 [root@ceph-02 /]# rados --pool mypool get helloworld get.txt
 [root@ceph-02 /]# ls -l get.txt
 -rw-r--r--. 1 root root   21  8月 09 01:00 get.txt
-[root@ceph-02 /]# cat get.txt 
+[root@ceph-02 /]# cat get.txt
 Hello world of ceph.
 [root@ceph-02 /]# rados --pool mypool df
 POOL_NAME USED OBJECTS CLONES COPIES MISSING_ON_PRIMARY UNFOUND DEGRADED RD_OPS RD   WR_OPS WR   
-mypool2     21       1      0      3                  0       0        0      1 1024      1 1024 
+mypool2     21       1      0      3                  0       0        0      1 1024      1 1024
 ...
 ```
 先程とは違うノードから`helloworld`オブジェクトをGETできました。`RD_OPS`と`RD`はそれぞれ読み込み回数と読み込み容量が表示されるところであり、GETしたことによりそれぞれ数値が変わったことが確認できます。
