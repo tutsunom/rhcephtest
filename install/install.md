@@ -211,13 +211,13 @@ devices:
 ```
 
 ### 5. playbookの実行
-ceph-ansibleのplaybookは`/usr/share/ceph-ansible/site.yml.sample`をコピーして`site.yml`として作ります。  
-`site.yml`自身は編集する必要がなく、そのまま`ansible-playbook`コマンドで指定してplaybookを実行します。  
+ceph-ansibleのplaybookは`/usr/share/ceph-ansible/site-docker.yml.sample`をコピーして`site-docker.yml`として作ります。  
+`site-docker.yml`自身は編集する必要がなく、そのまま`ansible-playbook`コマンドで指定してplaybookを実行します。  
 ```
 [root@ceph-mgmt ~]# cd /usr/share/ceph-ansible/
-[root@ceph-mgmt ceph-ansible]# cp site.yml.sample site.yml
+[root@ceph-mgmt ceph-ansible]# cp site-docker.yml.sample site-docker.yml
 [root@ceph-mgmt ceph-ansible]# echo "retry_files_save_path = ~/" >> /etc/ansible/ansible.cfg	#retryファイルのパスをホームディレクトリに指定
-[root@ceph-mgmt ceph-ansible]# ansible-playbook site.yml
+[root@ceph-mgmt ceph-ansible]# ansible-playbook site-docker.yml
 ...
 ...
 PLAY RECAP ***********************************************************************************************************
