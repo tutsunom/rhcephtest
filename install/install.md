@@ -174,7 +174,7 @@ ceph_origin: repository
 ceph_repository: rhcs
 ceph_repository_type: cdn
 ceph_rhcs_version: 3
-monitor_interface: bond-pub
+monitor_address_block: "192.168.30.0/24"
 public_network: "192.168.30.0/24"
 cluster_network: "192.168.40.0/24"
 journal_size: 102400
