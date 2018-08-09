@@ -9,7 +9,7 @@ RHCS2からcephクラスターのデプロイはceph-ansibleを利用するよ�
 次のようなcephクラスターをイメージしてデプロイする手順を記載します。
 
 
-![クラスターイメージ](https://github.com/tutsunom/rhcephtest/blob/master/install/image/cluster_container.png)
+![クラスターイメージ](https://github.com/tutsunom/rhcephtest/blob/master/install/cluster_container.png)
 
 - 4ノードCephクラスター
 - 3つのノードでは、MON/MGRとOSDがDockerコンテナとして同居
