@@ -220,11 +220,11 @@ ceph-ansibleのplaybookは`/usr/share/ceph-ansible/site-docker.yml.sample`をコ
 [root@ceph-mgmt ceph-ansible]# ansible-playbook site-docker.yml
 ...
 ...
-PLAY RECAP ***********************************************************************************************************
-ceph-01		: ok=97   changed=22   unreachable=0    failed=0   
-ceph-02		: ok=84   changed=18   unreachable=0    failed=0   
-ceph-03		: ok=89   changed=19   unreachable=0    failed=0   
-ceph-04		: ok=45   changed=14   unreachable=0    failed=0   
+PLAY RECAP *********************************************************************
+ceph-01                    : ok=218  changed=16   unreachable=0    failed=0   
+ceph-02                    : ok=212  changed=11   unreachable=0    failed=0   
+ceph-03                    : ok=215  changed=12   unreachable=0    failed=0   
+ceph-04                    : ok=145  changed=11   unreachable=0    failed=0   
 ```
 
 ---
@@ -238,50 +238,69 @@ ceph-04		: ok=45   changed=14   unreachable=0    failed=0
 
 ```
 [root@ceph-01 ~]# docker ps
-CONTAINER ID        IMAGE                                                     COMMAND             CREATED             STATUS              PORTS               NAMES
-3f6803f03891        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n1
-1189a76f6440        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n2
-c4b008869a06        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n3
-c9ed19d23c5c        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n4
-b78be631b351        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-mgr-ceph-01
-f4d59836d3f9        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-mon-ceph-01
+CONTAINER ID        IMAGE                                                     COMMAND             CREATED             STATUS              PORTS               NAMES
+3f6803f03891        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n1
+1189a76f6440        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n2
+c4b008869a06        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n3
+c9ed19d23c5c        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-osd-ceph-01-nvme0n4
+b78be631b351        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-mgr-ceph-01
+f4d59836d3f9        registry.access.redhat.com/rhceph/rhceph-3-rhel7:latest   "/entrypoint.sh"    40 hours ago        Up 40 hours                             ceph-mon-ceph-01
 [root@ceph-01 ~]# docker exec -it ceph-mon-ceph-01 bash
 [root@ceph-01 /]# ceph status
   cluster:
-    id:     5765942e-be0e-4a70-8542-871bf4ced6c4
+    id:     2102cb3c-e458-4fec-b215-a15f43eaa98d
     health: HEALTH_WARN
-            too few PGs per OSD (16 < min 30)
-
+            too few PGs per OSD (6 < min 30)
+ 
   services:
     mon: 3 daemons, quorum ceph-01,ceph-02,ceph-03
     mgr: ceph-02(active), standbys: ceph-03, ceph-01
-    osd: 12 osds: 12 up, 12 in
+    osd: 16 osds: 16 up, 16 in
     rgw: 1 daemon active
-
+ 
   data:
-    pools:   6 pools, 48 pgs
-    objects: 208 objects, 3359 bytes
-    usage:   971 MB used, xxxxx GB / xxxxx GB avail
-    pgs:     48 active+clean
+    pools:   4 pools, 32 pgs
+    objects: 187 objects, 1113 bytes
+    usage:   1723 MB used, 27001 GB / 27002 GB avail
+    pgs:     32 active+clean
 
 ```
 `too few PGs per OSD`という内容のWARNINGが出ています。デフォルトで作られているプールに割り振られているPGが少ないようです。  
-デフォルトのプールのPGを増やしてもいいのですが、せっかくなので新しいプールを作ってもう一度確認してみます。
+デフォルトのプールのPGを増やしてもいいのですが、せっかくなので新しいプールを作ってもう一度確認してみます。ついでにプールの一覧も見てみましょう。
 ```
 [root@ceph-01 /]# ceph osd pool create mypool 256 256
 pool ‘mypool’ created
 [root@ceph-01 /]# ceph status
   cluster:
-    id:     5765942e-be0e-4a70-8542-871bf4ced6c4
+    id:     2102cb3c-e458-4fec-b215-a15f43eaa98d
     health: HEALTH_OK
-...
+ 
+  services:
+    mon: 3 daemons, quorum ceph-01,ceph-02,ceph-03
+    mgr: ceph-02(active), standbys: ceph-03, ceph-01
+    osd: 16 osds: 16 up, 16 in
+    rgw: 1 daemon active
+ 
   data:
-    pools:   7 pools, 304 pgs
-    objects: 208 objects, 3359 bytes
-    usage:   977 MB used, xxxxx GB / xxxxx GB avail
-    pgs:     304 active+clean
+    pools:   5 pools, 288 pgs
+    objects: 187 objects, 1113 bytes
+    usage:   1727 MB used, 27001 GB / 27002 GB avail
+    pgs:     288 active+clean
+[root@ceph-01 /]# rados df
+POOL_NAME           USED OBJECTS CLONES COPIES MISSING_ON_PRIMARY UNFOUND DEGRADED RD_OPS RD    WR_OPS WR   
+.rgw.root           1113       4      0     12                  0       0        0     12  8192      4 4096 
+default.rgw.control    0       8      0     24                  0       0        0      0     0      0    0 
+default.rgw.log        0     175      0    525                  0       0        0   1812 1637k   1208    0 
+default.rgw.meta       0       0      0      0                  0       0        0      0     0      0    0 
+mypool                 0       0      0      0                  0       0        0      0     0      0    0 
+
+total_objects    187
+total_used       1726M
+total_avail      27001G
+total_space      27002G
 ```
-クラスター全体でPGの数が増えたため、`HEALTH_OK`になりました。
+クラスター全体でPGの数が増えたため、`HEALTH_OK`になりました。  
+デフォルトのプールは4つありますが、これは特に使うことがなければ削除してしまっても問題ありません。
 
 ### プールにオブジェクトをPUTする
 次にMONノードからプールにオブジェクトをPUTしてみます。
